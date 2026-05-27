@@ -1,0 +1,20 @@
+# OpenSymphony Instance Configuration
+# This file is injected per-clone via cloud-init to parameterize the VM
+
+# Git repository to clone
+git_repo: ""
+
+# Git branch to checkout
+git_branch: "main"
+
+# SSH private key for cloning private repos (multiline string)
+git_ssh_key: ""
+
+# Directory where the repo will be cloned
+workspace_dir: "/home/opensymphony/workspace"
+
+# Whether to run 'opensymphony init' after cloning
+run_init: true
+
+# Whether to enable the orchestrator systemd service
+start_orchestrator: false

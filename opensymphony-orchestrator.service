@@ -1,0 +1,21 @@
+[Unit]
+Description=OpenSymphony Orchestrator
+After=network.target opensymphony-firstboot.service
+Wants=opensymphony-firstboot.service
+
+[Service]
+Type=simple
+User=opensymphony
+Group=opensymphony
+WorkingDirectory=/home/opensymphony/workspace
+Environment=PATH=/home/opensymphony/.cargo/bin:/home/opensymphony/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=HOME=/home/opensymphony
+EnvironmentFile=-/etc/opensymphony/environment
+ExecStart=/home/opensymphony/.cargo/bin/opensymphony run
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenSymphony First Boot Setup
+After=network.target cloud-final.service
+Wants=cloud-final.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/opensymphony-firstboot
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
