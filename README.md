@@ -131,10 +131,28 @@ sed -i 's/name: opensymphony-update/name: opensymphony-base/' /etc/pve/local/qem
 qm template 205
 ```
 
+## Finding VM IP Addresses
+
+A helper script is installed on the Proxmox host:
+
+```bash
+# Find the IP of any VM
+find-vm-ip <vmid>
+
+# Example
+find-vm-ip 207
+```
+
+This tries multiple methods:
+1. **Guest agent** (fastest, most reliable)
+2. **ARP table lookup** by MAC address
+3. **Network scan** with nmap
+
 ## Files
 
 - `opensymphony-firstboot.sh` — firstboot script installed in template
 - `opensymphony-firstboot.service` — systemd service for firstboot
 - `opensymphony-orchestrator.service` — systemd service for `opensymphony run`
 - `instance-config.yaml` — default config template
+- `find-vm-ip.sh` — helper to find VM IP addresses on the Proxmox host
 - `clone-opensymphony.sh` — Proxmox host script to clone and configure
