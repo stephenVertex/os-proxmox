@@ -42,8 +42,8 @@ GIT_REPO=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).g
 GIT_BRANCH=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('git_branch', 'main'))")
 GIT_SSH_KEY=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('git_ssh_key', ''))")
 WORKSPACE_DIR=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('workspace_dir', '/home/opensymphony/workspace'))")
-RUN_INIT=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('run_init', 'true'))")
-START_ORCHESTRATOR=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('start_orchestrator', 'false'))")
+RUN_INIT=$(python3 -c "import yaml; val = yaml.safe_load(open('$CONFIG_FILE')).get('run_init', True); print(str(val).lower())")
+START_ORCHESTRATOR=$(python3 -c "import yaml; val = yaml.safe_load(open('$CONFIG_FILE')).get('start_orchestrator', False); print(str(val).lower())")
 
 # Set up environment variables
 ENV_FILE="/etc/opensymphony/environment"
@@ -83,15 +83,33 @@ fi
 # Run opensymphony init
 if [ "$RUN_INIT" = "true" ] && [ -n "$GIT_REPO" ]; then
     log "Running opensymphony init in $WORKSPACE_DIR"
-    sudo -u opensymphony bash -c "
-        export PATH=\"/home/opensymphony/.cargo/bin:/home/opensymphony/.local/bin:\$PATH\"
-        export HOME=/home/opensymphony
-        cd '$WORKSPACE_DIR'
-        # Non-interactive init: create basic config files
-        if [ ! -f WORKFLOW.md ]; then
-            opensymphony init || true
-        fi
-    "
+    
+    # Build env var exports for the sudo command
+    ENV_EXPORTS=""
+    if [ -f "$ENV_FILE" ]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" || "$line" =~ ^# ]] && continue
+            ENV_EXPORTS="$ENV_EXPORTS export $line;"
+        done < "$ENV_FILE"
+    fi
+    
+    # Run init non-interactively by piping answers:
+    #   "n"  -> No AI PR review scaffolding
+    #   ""   -> No Linear project slug (can be set later)
+    # If LLM env vars are set via the env file, no LLM prompts appear.
+    # If WORKFLOW.md already exists, skip entirely.
+    if [ ! -f "$WORKSPACE_DIR/WORKFLOW.md" ]; then
+        log "Piping non-interactive answers to opensymphony init"
+        sudo -u opensymphony bash -c "
+            export PATH=\"/home/opensymphony/.cargo/bin:/home/opensymphony/.local/bin:\$PATH\"
+            export HOME=/home/opensymphony
+            $ENV_EXPORTS
+            cd '$WORKSPACE_DIR'
+            printf 'n\n\n\n\n' | opensymphony init || true
+        "
+    else
+        log "WORKFLOW.md already exists, skipping init"
+    fi
 fi
 
 # Enable and configure systemd service for orchestrator if requested
