@@ -46,6 +46,13 @@ RUN_INIT=$(python3 -c "import yaml; val = yaml.safe_load(open('$CONFIG_FILE')).g
 START_ORCHESTRATOR=$(python3 -c "import yaml; val = yaml.safe_load(open('$CONFIG_FILE')).get('start_orchestrator', False); print(str(val).lower())")
 LINEAR_PROJECT_SLUG=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('linear_project_slug', ''))")
 
+# Validate required fields
+if [ -z "$LINEAR_PROJECT_SLUG" ]; then
+    log "ERROR: linear_project_slug is required but not set in $CONFIG_FILE"
+    touch /var/lib/opensymphony-firstboot-done
+    exit 1
+fi
+
 # Set up environment variables
 ENV_FILE="/etc/opensymphony/environment"
 if [ -f "$ENV_FILE" ]; then

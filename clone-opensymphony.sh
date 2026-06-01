@@ -19,12 +19,12 @@ Required:
   --id VMID                  Proxmox VM ID for the new instance
   --name NAME                VM name
   --repo URL                 Git repository URL to clone
+  --linear-slug SLUG         Linear project slug (injected into WORKFLOW.md)
 
 Optional:
   --branch BRANCH            Git branch (default: main)
   --ssh-key FILE             Path to SSH private key for private repos
   --linear-key KEY           Linear API key
-  --linear-slug SLUG         Linear project slug (injected into WORKFLOW.md)
   --llm-model MODEL          LLM model (e.g., openai/gpt-4o)
   --llm-key KEY              LLM API key
   --llm-url URL              LLM base URL (optional)
@@ -91,8 +91,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z "$VMID" || -z "$NAME" || -z "$REPO" ]]; then
-    echo "Error: --id, --name, and --repo are required"
+if [[ -z "$VMID" || -z "$NAME" || -z "$REPO" || -z "$LINEAR_SLUG" ]]; then
+    echo "Error: --id, --name, --repo, and --linear-slug are required"
     show_usage
     exit 1
 fi

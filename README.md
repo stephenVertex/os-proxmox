@@ -29,6 +29,7 @@ clone-opensymphony.sh \
   --id 300 \
   --name my-project \
   --repo git@github.com:you/my-project.git \
+  --linear-slug "my-project" \
   --branch main \
   --ssh-key /root/.ssh/id_ed25519 \
   --linear-key "lin_api_xxx" \
@@ -45,6 +46,7 @@ clone-opensymphony.sh \
 | `--id` | Yes | Proxmox VM ID |
 | `--name` | Yes | VM hostname and name |
 | `--repo` | Yes | Git repository URL |
+| `--linear-slug` | Yes | Linear project slug (injected into WORKFLOW.md) |
 | `--branch` | No | Git branch (default: `main`) |
 | `--ssh-key` | No | SSH key file for private repos |
 | `--linear-key` | No | Linear API key |
@@ -58,7 +60,6 @@ clone-opensymphony.sh \
 | `--start` | No | Start VM after creation |
 | `--auto-run` | No | Enable `opensymphony run` on boot |
 | `--env-file` | No | Additional env vars file |
-| `--linear-slug` | No | Linear project slug (injected into WORKFLOW.md) |
 
 ### 3. Check First Boot Status
 
