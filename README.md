@@ -33,6 +33,7 @@ clone-opensymphony.sh \
   --branch main \
   --ssh-key /root/.ssh/id_ed25519 \
   --linear-key "lin_api_xxx" \
+  --github-token "ghp_xxx" \
   --llm-model "openai/gpt-4o" \
   --llm-key "sk-xxx" \
   --oh-secret "random-secret" \
@@ -50,6 +51,7 @@ clone-opensymphony.sh \
 | `--branch` | No | Git branch (default: `main`) |
 | `--ssh-key` | No | SSH key file for private repos |
 | `--linear-key` | No | Linear API key |
+| `--github-token` | No | GitHub token for gh CLI (PRs, push, etc.) |
 | `--llm-model` | No | LLM model string |
 | `--llm-key` | No | LLM API key |
 | `--llm-url` | No | LLM base URL |

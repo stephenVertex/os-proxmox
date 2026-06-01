@@ -25,6 +25,7 @@ Optional:
   --branch BRANCH            Git branch (default: main)
   --ssh-key FILE             Path to SSH private key for private repos
   --linear-key KEY           Linear API key
+  --github-token TOKEN       GitHub token for gh CLI (PRs, push, etc.)
   --llm-model MODEL          LLM model (e.g., openai/gpt-4o)
   --llm-key KEY              LLM API key
   --llm-url URL              LLM base URL (optional)
@@ -58,6 +59,7 @@ AUTO_RUN=0
 GIT_SSH_KEY=""
 LINEAR_KEY=""
 LINEAR_SLUG=""
+GITHUB_TOKEN=""
 LLM_MODEL=""
 LLM_KEY=""
 LLM_URL=""
@@ -75,6 +77,7 @@ while [[ $# -gt 0 ]]; do
         --ssh-key) GIT_SSH_KEY="$2"; shift 2 ;;
         --linear-key) LINEAR_KEY="$2"; shift 2 ;;
         --linear-slug) LINEAR_SLUG="$2"; shift 2 ;;
+        --github-token) GITHUB_TOKEN="$2"; shift 2 ;;
         --llm-model) LLM_MODEL="$2"; shift 2 ;;
         --llm-key) LLM_KEY="$2"; shift 2 ;;
         --llm-url) LLM_URL="$2"; shift 2 ;;
@@ -148,6 +151,9 @@ ENV_TEMP="/tmp/opensymphony-env-$VMID"
 : > "$ENV_TEMP"
 if [[ -n "$LINEAR_KEY" ]]; then
     echo "LINEAR_API_KEY=$LINEAR_KEY" >> "$ENV_TEMP"
+fi
+if [[ -n "$GITHUB_TOKEN" ]]; then
+    echo "GH_TOKEN=$GITHUB_TOKEN" >> "$ENV_TEMP"
 fi
 if [[ -n "$LLM_MODEL" ]]; then
     echo "LLM_MODEL=$LLM_MODEL" >> "$ENV_TEMP"
