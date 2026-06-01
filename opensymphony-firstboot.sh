@@ -44,6 +44,7 @@ GIT_SSH_KEY=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')
 WORKSPACE_DIR=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('workspace_dir', '/home/opensymphony/workspace'))")
 RUN_INIT=$(python3 -c "import yaml; val = yaml.safe_load(open('$CONFIG_FILE')).get('run_init', True); print(str(val).lower())")
 START_ORCHESTRATOR=$(python3 -c "import yaml; val = yaml.safe_load(open('$CONFIG_FILE')).get('start_orchestrator', False); print(str(val).lower())")
+LINEAR_PROJECT_SLUG=$(python3 -c "import yaml; print(yaml.safe_load(open('$CONFIG_FILE')).get('linear_project_slug', ''))")
 
 # Set up environment variables
 ENV_FILE="/etc/opensymphony/environment"
@@ -95,17 +96,23 @@ if [ "$RUN_INIT" = "true" ] && [ -n "$GIT_REPO" ]; then
     
     # Run init non-interactively by piping answers:
     #   "n"  -> No AI PR review scaffolding
-    #   ""   -> No Linear project slug (can be set later)
-    # If LLM env vars are set via the env file, no LLM prompts appear.
+    #   "{slug}" or "" -> Linear project slug (injected if provided, blank otherwise)
+    #   ""   -> LLM_BASE_URL (uses default if not set in env)
+    #   ""   -> Skip commit/push prompt
+    # If LLM env vars are set via the env file, LLM prompts are skipped.
     # If WORKFLOW.md already exists, skip entirely.
     if [ ! -f "$WORKSPACE_DIR/WORKFLOW.md" ]; then
         log "Piping non-interactive answers to opensymphony init"
+        if [ -n "$LINEAR_PROJECT_SLUG" ]; then
+            log "Injecting Linear project slug: $LINEAR_PROJECT_SLUG"
+        fi
         sudo -u opensymphony bash -c "
             export PATH=\"/home/opensymphony/.cargo/bin:/home/opensymphony/.local/bin:\$PATH\"
             export HOME=/home/opensymphony
             $ENV_EXPORTS
             cd '$WORKSPACE_DIR'
-            printf 'n\n\n\n\n' | opensymphony init || true
+            # Pipe answers: n (no AI PR), slug or blank, blank (LLM_URL), blank (skip commit)
+            printf 'n\n%s\n\n\n' '$LINEAR_PROJECT_SLUG' | opensymphony init || true
         "
     else
         log "WORKFLOW.md already exists, skipping init"

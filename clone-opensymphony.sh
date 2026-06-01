@@ -24,6 +24,7 @@ Optional:
   --branch BRANCH            Git branch (default: main)
   --ssh-key FILE             Path to SSH private key for private repos
   --linear-key KEY           Linear API key
+  --linear-slug SLUG         Linear project slug (injected into WORKFLOW.md)
   --llm-model MODEL          LLM model (e.g., openai/gpt-4o)
   --llm-key KEY              LLM API key
   --llm-url URL              LLM base URL (optional)
@@ -56,6 +57,7 @@ START=0
 AUTO_RUN=0
 GIT_SSH_KEY=""
 LINEAR_KEY=""
+LINEAR_SLUG=""
 LLM_MODEL=""
 LLM_KEY=""
 LLM_URL=""
@@ -72,6 +74,7 @@ while [[ $# -gt 0 ]]; do
         --branch) BRANCH="$2"; shift 2 ;;
         --ssh-key) GIT_SSH_KEY="$2"; shift 2 ;;
         --linear-key) LINEAR_KEY="$2"; shift 2 ;;
+        --linear-slug) LINEAR_SLUG="$2"; shift 2 ;;
         --llm-model) LLM_MODEL="$2"; shift 2 ;;
         --llm-key) LLM_KEY="$2"; shift 2 ;;
         --llm-url) LLM_URL="$2"; shift 2 ;;
@@ -130,6 +133,10 @@ workspace_dir: "/home/opensymphony/workspace"
 run_init: true
 start_orchestrator: $(if [[ $AUTO_RUN -eq 1 ]]; then echo "true"; else echo "false"; fi)
 EOF
+
+if [[ -n "$LINEAR_SLUG" ]]; then
+    echo "linear_project_slug: \"$LINEAR_SLUG\"" >> "$INSTANCE_CONFIG"
+fi
 
 if [[ -n "$GIT_SSH_KEY" && -f "$GIT_SSH_KEY" ]]; then
     echo "git_ssh_key: |" >> "$INSTANCE_CONFIG"

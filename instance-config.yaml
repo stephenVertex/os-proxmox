@@ -18,3 +18,7 @@ run_init: true
 
 # Whether to enable the orchestrator systemd service
 start_orchestrator: false
+
+# Linear project slug (injected into WORKFLOW.md)
+# Leave blank to set manually later
+linear_project_slug: ""

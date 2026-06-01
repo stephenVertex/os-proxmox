@@ -58,6 +58,7 @@ clone-opensymphony.sh \
 | `--start` | No | Start VM after creation |
 | `--auto-run` | No | Enable `opensymphony run` on boot |
 | `--env-file` | No | Additional env vars file |
+| `--linear-slug` | No | Linear project slug (injected into WORKFLOW.md) |
 
 ### 3. Check First Boot Status
 
